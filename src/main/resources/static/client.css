@@ -1,0 +1,294 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    background: #fafafa; 
+}
+
+body, div {
+    font-family: 'Fira Sans', sans-serif;   
+}
+
+
+
+sup, sub {
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em;
+}
+
+sub { 
+  top: 0.4em; 
+}
+
+
+.waitMe {
+	background: rgba(255, 255, 255, 0.7) !important;
+}
+
+#map {
+    height: 100%;
+}
+
+#searchCard {
+    background-color: white;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+    position: absolute;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    top: 15px;
+    left: 15px;
+    width: 500px;
+    height: 170px; 
+    overflow-y: auto;
+    max-width: calc(100% - 30px);
+}
+
+#logoDiv {
+	padding: 10px;
+}
+
+#suggestBoxDiv {
+	padding: 10px;
+}
+
+.field-group input, .field-group textarea {
+    font-family: 'Fira Sans', sans-serif !important;   
+}
+
+#realEstatePopup {
+	position: absolute;
+	width: 300px;
+	font-size: 16px;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);	
+}
+
+#realEstatePopupHeader {
+	padding: 10px;
+	font-weight: bold;
+	width: 100%;
+	color: white;
+	background-color: #2196F3 
+}
+
+#realEstatePopupClose {
+    float: right;
+}
+
+.realEstatePopupRow {
+	padding: 5px 10px 5px 10px;
+	width: 100%;
+	background-color: white;
+}
+
+#resultCard {
+    background-color: white; 
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+    transition: height 0.5s;
+    position: absolute;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    top: 200px;
+    left: 15px;
+    width: 500px;
+    height: calc(100% - 215px);
+    overflow-x: auto;
+    visibility: hidden;
+    max-width: calc(100% - 30px);
+}
+
+#resultCardContent {
+    padding: 0px 15px 15px 15px;
+}
+
+#fadeoutBottomDiv {
+    position: sticky;
+    bottom: 0px;
+    width: 100%;
+    padding: 30px 0px;
+    /*background-image: linear-gradient(rgba(250, 250, 250, 0) 0%, rgba(250, 250, 250, 1) 100%);*/
+    background-image: linear-gradient(rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+#resultDiv {
+	background-color: white;
+}
+
+#resultHeaderRow {
+    background-color: white; /*#fafafa;*/ /* GREY_LIGHTEN_5 */
+    margin-bottom: 5px;
+    position: sticky;
+    top: 0px;
+    padding-top: 0px;
+    padding-bottom: 15px;
+    z-index: 10;
+    height: 58px;
+}
+
+#resultParcelSpan {
+    margin: 0px;
+    padding: 0px;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 58px;
+    display: inline-block; /* needed for setting width of span element */    
+    width: 70%; /* Zeilenumbrüche mit line-height sind schlecht. Eventuell mit den Prozenten spielen, damit es im Bedarfsfall nicht allzu schlecht aussieht. */     
+}
+
+#closeExtractButton {
+    line-height: 58px; 
+}
+
+#expandExtractButton {
+    line-height: 58px; 
+}
+
+#resultButtonSpan {
+    margin: 0px;
+    padding: 0px;
+    line-height: 58px;
+    text-align: right;
+    display: inline-block;
+    width: 30%;     
+}
+
+#resultTabs div.flex-layout {
+    justify-content: center;
+    /*color: #2196F3;*/
+}
+
+.cadastralSurveyingInfoKey {
+    font-weight: 600;
+    display: inline-block; /* needed for setting width of span element */    
+    width: 40%;
+}
+
+.fontSemiBold {
+	font-weight: 600;
+}
+
+.fakeColumn {
+    padding: 15px 0px 0px 0px;
+    border-bottom: 1px #bdbdbd solid;
+}
+
+/* Damit die Farbe des Textes immer gleich ist und nicht aufgrund der Hintergrundfarbe
+ * automagisch ändert */
+.panel-title>a, .panel-title>small, .panel-title>.small, .panel-title>small>a, .panel-title>.small>a {
+    color: black !important;
+}
+
+
+div.panel.oerebAccordionPanelTheme {
+	margin-top: 20px !important;
+}
+
+div.oerebAccordionPanelTheme h4 {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+.panel-body {
+	padding: 0px;
+}
+
+.panel-group {
+    margin-bottom: -1px !important;
+}
+
+.oerebAccordionPanelHeaderElement h4.panel-title {
+    display: inline-block; 
+    width: 80%;
+}
+
+.oerebAccordionPanelHeaderChip {
+    display: inline-block;
+    width: 20%;
+	text-align: right;
+	color: black;
+}
+
+.oerebAccordionPanelHeaderChip div.chip-value {
+	text-align:center;
+}
+
+.oerebAccordionPanelTheme {
+	border: 1px solid #e0e0e0;
+    margin: 0px 0px 0px 0px;
+} 
+
+.oerebAccordionPanelTheme h4 {
+    font-weight: 600;
+}
+
+.oerebAccordionPanelTheme ul {
+    margin-bottom: 0px !important; 
+} 
+
+.themeList {	
+    border: 1px solid #e0e0e0;
+    margin: -1px -1px 0px -1px;
+}
+
+.generalInformation {
+    color: black;	
+}
+
+#oerebAccordionConcernedTheme h4 {
+	font-size: 13px;
+}
+
+.oerebAccordionPanelConcernedTheme {
+	border: 1px solid #e0e0e0;
+    margin: -1px -1px 0px -1px !important;	
+}
+
+div.oerebAccordionPanelConcernedTheme h4 {
+	padding-top: 5px !important;
+	padding-bottom: 5px !important;
+}
+
+.oerebThemeContent {
+	color: black;
+	padding: 10px 15px 10px 15px;
+}
+
+p.slide-container {
+	margin-bottom: 0px !important;
+}
+
+.restrictionRow {
+    padding: 5px 0px 5px 0px;	
+}
+
+
+.resultLink {
+    color: #2196F3; 
+}
+
+a.resultLink:hover {
+    color: #2196F3;
+    text-decoration: underline !important;
+}  
+
+a.resultLink:visited {
+    color: #2196F3; 
+    text-decoration: underline !important;
+}  
+
+#errorModal p {
+	text-align: left;
+}
+
+/* Weil Firefox Scrollbars hat, fehlt plötzlich Platz und
+ * die Tabs gehen kaputt. */
+.nav>li>a {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+
+::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
