@@ -196,6 +196,21 @@ public class MapPresets {
 
         Projection projection = new Projection(projectionOptions);
 
+        // Layergroup
+        Group layerGroup = new Group();
+        ol.Collection<Base> layers = new Collection<Base>();
+        //layers.push(geodiensteWmsLayer);
+        //layers.push(geoviewBlWmsLayer);                
+        //layers.push(sogisWmtsLayer);        
+        layerGroup.setLayers(layers);
+
+        {
+            
+        }
+        
+        {
+            
+        }
         WmtsOptions wmtsOptions = OLFactory.createOptions();
         wmtsOptions.setUrl("https://wmts.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png");
         wmtsOptions.setLayer("ch.swisstopo.landeskarte-grau-10");
