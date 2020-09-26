@@ -2,13 +2,13 @@
 
 ## TODO
 - ~~Hintergrundkarte Schweiz... ?!~~
-- cadastre-web-service entfernen (xsd, ...)
+- ~~cadastre-web-service entfernen (xsd, ...)~~
 - ~~Unterschiedliches Icon für Suchresultate (siehe wgc-gwt)~~
 - ~~Error handling~~ needs testing
 - ~~Settings auslagern~~ Ganz konsequent wäre alles via Spring Boot Properties, diese als JSON exponieren und vom Browser konsumieren.
 - ~~JSON-Antwort in POJO?~~ won't fix
 - Eigene elemento-Elemente?
-- oereb web service URL als Konfig
+- ~~oereb web service URL als Konfig~~
 - console.log() bereinigen
 - Fehlende GUI-Übersetzungen
 - Multilingual im Backend?

@@ -96,23 +96,29 @@ public class OerebExtractService {
 
     public RealEstateDPR getExtract(Egrid egrid, RealEstateDPR realEstateDPR) throws IOException { 
         List<OerebWebService> oerebWebServices = config.getOerebWebServices();  
-
+        
         HttpURLConnection connection = null;
         int responseCode = 204;
-        for (OerebWebService ws : oerebWebServices) {
-            URL url = new URL(ws.getBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
-            logger.debug("Url: " + url.toString());
+        
+        URL url = new URL(egrid.getOerebServiceBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
+        logger.debug("Url: " + url.toString());
 
+        try {
             connection = (HttpURLConnection) url.openConnection();
+            // TODO: how to handle read timeouts?
+            // Read timeout darf ja nicht zu klein sein, weil das
+            // Herstellen des PDF eine Weile dauern kann.
+            connection.setConnectTimeout(4000);
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/xml");
             responseCode = connection.getResponseCode();
             if (responseCode == 200) {
                 logger.debug("Extract request successful: " + url.toString());
-                break;
-            }
+            }   
+        } catch (Exception e) {
+             logger.error(e.getMessage());
         }
-
+        
         if (responseCode == 204) {
             throw new IllegalStateException("No extract found for egrid: " + egrid.getEgrid());
         }
@@ -158,8 +164,13 @@ public class OerebExtractService {
                 .collect(collectingAndThen(toList(), ArrayList<NotConcernedTheme>::new));
         // TODO: Sortierung nur für Kanton SO.
         notConcernedThemes.sort(compare);
-        logger.debug("===========Not concerned themes===========");
+        logger.debug("===========End of Not concerned themes===========");
  
+        // Grundidee: Es gibt ein ConcerncedTheme-Objekt pro Thema mit allen ÖREBs zu diesem Thema. 
+        // Diese ConcernedThemes werden in einer Liste gespeichert. Dies entspricht
+        // dem späteren Handling im GUI.
+        logger.debug("===========Concerned themes===========");
+        
         /*
          * Solothurn:
          * Theme.Code:           LandUsePlans                               LandUsePlans
@@ -181,19 +192,14 @@ public class OerebExtractService {
          * Weil Kantone Subthemen völlig anders behandeln und verwenden, muss dem auch beim Verarbeiten
          * und Darstellen im Client Rechnung getragen werden.
          * Auf Serverseite muss die Kombination Theme.Text.Text + Subtheme gruppiert werden.
-         * Im Client für das Beschriften der Handorgeln wir geprüft, ob - falls vorhanden - das Subthema
+         * Im Client für das Beschriften der Handorgeln wird geprüft, ob - falls vorhanden - das Subthema
          * sprechend ist (Kanton Solothurn) oder ob es sich um den technischen Namen handelt (Kanton GL).
          */
-        
         Map<ThemeTuple, List<RestrictionOnLandownershipType>> groupedXmlRestrictions = xmlExtract.getRealEstate().getRestrictionOnLandownership()
                 .stream()
                 .collect(Collectors.groupingBy(r -> new ThemeTuple(r.getTheme().getText().getText(), r.getSubTheme())));
         logger.debug("groupedXmlRestrictions (tuple): " + groupedXmlRestrictions.toString());
-        
-        // Es gibt ein ConcerncedTheme-Objekt pro Thema mit allen ÖREBs zu diesem Thema. 
-        // Diese ConcernedThemes werden in einer Liste gespeichert. Dies entspricht
-        // dem späteren Handling im GUI.
-        logger.debug("===========Concerned themes===========");
+
         ArrayList<ConcernedTheme> concernedThemesList = new ArrayList<ConcernedTheme>();
         for (Map.Entry<ThemeTuple, List<RestrictionOnLandownershipType>> entry : groupedXmlRestrictions.entrySet()) {
             logger.debug("---------------------------------------------");
@@ -513,7 +519,7 @@ public class OerebExtractService {
         }
         // TODO: Sorting funktioniert nur für Kanton SO.     
         concernedThemesList.sort(compare);        
-        logger.debug("===========Concerned themes===========");
+        logger.debug("===========End of Concerned themes===========");
         
         RealEstateDPRType xmlRealEstateDPR = xmlExtract.getRealEstate();
         realEstateDPR.setEgrid(xmlRealEstateDPR.getEGRID());

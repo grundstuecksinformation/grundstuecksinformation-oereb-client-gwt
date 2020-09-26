@@ -34,4 +34,11 @@ app:
           baseUrl: https://geo.so.ch/api/oereb/
         - id: ch.sh
           baseUrl: https://oereb.geo.sh.ch/oereb/
-
+        - id: ch.gl
+          baseUrl: https://map.geo.gl.ch/oereb/wsgi/oereb/
+        - id: ch.sz
+          baseUrl: https://map.geo.sz.ch/oereb/wsgi/oereb/
+        - id: ch.ag
+          baseUrl: https://api.geo.ag.ch/v1/oereb/
+        - id: ch.zh
+          baseUrl: https://maps.zh.ch/oereb/

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -59,16 +60,22 @@ public class EgridServiceImpl extends RemoteServiceServlet implements EgridServi
             URL url = new URL(ws.getBaseUrl() + "getegrid/xml/?XY=" + XY.replace(" ",""));
             logger.debug("Url: " + url.toString());
             
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Accept", "application/xml");
-            responseCode = connection.getResponseCode();
-            if (responseCode == 200) {
-                egridUrl = url;
-                oerebBaseUrl = ws.getBaseUrl();
-                logger.debug("GetEgrid request successful: " + egridUrl);
-                break;
-            } 
+            try {
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setConnectTimeout(4000);
+                connection.setReadTimeout(4000);
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Accept", "application/xml");
+                responseCode = connection.getResponseCode();
+                if (responseCode == 200) {
+                    egridUrl = url;
+                    oerebBaseUrl = ws.getBaseUrl();
+                    logger.debug("GetEgrid request successful: " + egridUrl);
+                    break;
+                }                 
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
         }
        
         if (egridUrl == null) {
