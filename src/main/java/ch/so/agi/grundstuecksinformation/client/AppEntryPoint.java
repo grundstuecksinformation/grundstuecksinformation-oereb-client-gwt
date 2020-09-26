@@ -20,6 +20,7 @@ import org.dominokit.domino.ui.forms.SuggestBoxStore;
 import org.dominokit.domino.ui.forms.SuggestItem;
 import org.dominokit.domino.ui.grid.Column;
 import org.dominokit.domino.ui.grid.Row;
+import org.dominokit.domino.ui.icons.Icon;
 import org.dominokit.domino.ui.icons.Icons;
 import org.dominokit.domino.ui.lists.ListGroup;
 import org.dominokit.domino.ui.loaders.Loader;
@@ -192,7 +193,8 @@ public class AppEntryPoint implements EntryPoint {
         body().add(searchCard);
 
         HTMLElement logoDiv = div().id("logoDiv")
-                .add(img().attr("src", GWT.getHostPageBaseURL() + "logo_oereb_small.png")
+                .add(img()
+                        .attr("src", GWT.getHostPageBaseURL() + "logo_oereb_small.png")
                         .attr("alt", "Logo OEREB-Kataster").attr("width", "40%"))
                 .element();
         searchCard.appendChild(logoDiv);
@@ -228,8 +230,14 @@ public class AppEntryPoint implements EntryPoint {
                         searchResult.setEasting(((JsNumber) attrs.get("y")).valueOf());
                         searchResult.setNorthing(((JsNumber) attrs.get("x")).valueOf());
                         
-//                      // TODO icon type depending on address and parcel ?
-                        SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult, searchResult.getLabel(), Icons.ALL.place());
+                        Icon icon;
+                        if (searchResult.getOrigin().equalsIgnoreCase("parcel")) {
+                            icon = Icons.ALL.home();
+                        } else {
+                            icon = Icons.ALL.mail();
+                        }
+                        
+                        SuggestItem<SearchResult> suggestItem = SuggestItem.create(searchResult, searchResult.getLabel(), icon);
                         suggestItems.add(suggestItem);
                     }
                     suggestionsHandler.onSuggestionsReady(suggestItems);

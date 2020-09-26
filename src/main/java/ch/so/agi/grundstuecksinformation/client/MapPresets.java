@@ -161,12 +161,12 @@ public class MapPresets {
         //Coordinate centerCoordinate = new Coordinate(2688777,1283230); // Schaffhausen
         //Coordinate centerCoordinate = new Coordinate(2645218,1246759); // Unterentfelden
         //Coordinate centerCoordinate = new Coordinate(2683467,1248065); // Zürich
-//        Coordinate centerCoordinate = new Coordinate(2660158,1183640); // Mittelpunkt CH
+        //Coordinate centerCoordinate = new Coordinate(2660158,1183640); // Mittelpunkt CH
         Coordinate centerCoordinate = new Coordinate(2616491, 1240287); // Mittelpunkt SO
 
 
         view.setCenter(centerCoordinate);
-//      view.setZoom(3);
+        //view.setZoom(3);
       view.setZoom(6);
         //view.setZoom(14);
 
@@ -199,34 +199,51 @@ public class MapPresets {
         // Layergroup
         Group layerGroup = new Group();
         ol.Collection<Base> layers = new Collection<Base>();
-        //layers.push(geodiensteWmsLayer);
-        //layers.push(geoviewBlWmsLayer);                
-        //layers.push(sogisWmtsLayer);        
         layerGroup.setLayers(layers);
 
         {
+            WmtsOptions wmtsOptions = OLFactory.createOptions();
+            wmtsOptions.setUrl("https://wmts.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.jpeg");
+            wmtsOptions.setLayer("ch.swisstopo.pixelkarte-grau");
+            wmtsOptions.setRequestEncoding("REST");
+            wmtsOptions.setProjection(projection);
+            wmtsOptions.setWrapX(true);
+            wmtsOptions.setTileGrid(createWmtsTileGrid(projection, resolutionsBgdi));
+
+            Wmts wmtsSource = new Wmts(wmtsOptions);
+
+            LayerOptions wmtsLayerOptions = OLFactory.createOptions();
+            wmtsLayerOptions.setSource(wmtsSource);
+
+            Tile wmtsLayer = new Tile(wmtsLayerOptions);
+            wmtsLayer.setOpacity(1.0);
+            wmtsLayer.setMinResolution(1.5);    
             
+            layers.push(wmtsLayer);
         }
         
         {
+            ImageWmsParams imageWMSParams = OLFactory.createOptions();
+            imageWMSParams.setLayers("LCSF,LCSFPROJ,LCOBJ,SOSF,SOOBJ,SOLI,SOPT,Liegenschaften,Gebaeudeadressen,Nomenklatur,Rohrleitungen,Hoheitsgrenzen,Fixpunkte");
+            imageWMSParams.set("FORMAT", "image/jpeg");
+            imageWMSParams.set("TRANSPARENT", "false");
+            imageWMSParams.set("TILED", "true");
+
+            ImageWmsOptions imageWMSOptions = OLFactory.createOptions();
+            imageWMSOptions.setUrl("https://wfs.geodienste.ch/av/deu");
+            imageWMSOptions.setRatio(1.2f);
+            imageWMSOptions.setParams(imageWMSParams);
+
+            ImageWms imageWMSSource = new ImageWms(imageWMSOptions);
+
+            LayerOptions layerOptions = OLFactory.createOptions();
+            layerOptions.setSource(imageWMSSource);
             
+            ol.layer.Image wmsLayer = new Image(layerOptions);
+            wmsLayer.setOpacity(0.9);
+            wmsLayer.setMaxResolution(1.5);
+            layers.push(wmsLayer);
         }
-        WmtsOptions wmtsOptions = OLFactory.createOptions();
-        wmtsOptions.setUrl("https://wmts.geo.admin.ch/1.0.0/{Layer}/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png");
-        wmtsOptions.setLayer("ch.swisstopo.landeskarte-grau-10");
-        wmtsOptions.setRequestEncoding("REST");
-        wmtsOptions.setProjection(projection);
-        wmtsOptions.setWrapX(true);
-        wmtsOptions.setTileGrid(createWmtsTileGrid(projection, resolutionsBgdi));
-
-        Wmts wmtsSource = new Wmts(wmtsOptions);
-
-        LayerOptions wmtsLayerOptions = OLFactory.createOptions();
-        wmtsLayerOptions.setSource(wmtsSource);
-
-        Tile wmtsLayer = new Tile(wmtsLayerOptions);
-        wmtsLayer.setOpacity(1.0);
-//        wmtsLayer.setMaxResolution(maxResolution);
 
         ViewOptions viewOptions = OLFactory.createOptions();
         viewOptions.setProjection(projection);
@@ -247,7 +264,7 @@ public class MapPresets {
         mapOptions.setInteractions(Interaction.defaults(interactionOptions));
 
         Map map = new Map(mapOptions);
-        map.addLayer(wmtsLayer);
+        map.addLayer(layerGroup);
         
         return map;
     }

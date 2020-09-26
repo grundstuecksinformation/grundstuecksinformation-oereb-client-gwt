@@ -92,7 +92,9 @@ public class OerebExtractService {
     public RealEstateDPR getExtract(Egrid egrid, RealEstateDPR realEstateDPR) throws IOException {     
         // FIXME: Kann man vereinfachen.
         File xmlFile;
-        if (egrid.getOerebServiceBaseUrl() != null) { // request by map click
+        // Request by map click. Egrid wird vorgängig beim kantonalen OEREB-Webservice
+        // angefragt. Aus diesem Grund kennt man die OEREB-Webservice Base-Url.
+        if (egrid.getOerebServiceBaseUrl() != null) { 
             xmlFile = Files.createTempFile("oereb_extract_", ".xml").toFile();
             URL url = new URL(egrid.getOerebServiceBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
             logger.debug("extract url: " + url.toString());
@@ -109,7 +111,10 @@ public class OerebExtractService {
             java.nio.file.Files.copy(initialStream, xmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             initialStream.close();
             logger.info("File downloaded: " + xmlFile.getAbsolutePath());  
-        } else { // request by search
+        }
+        // Request by search. Egrid wird vom Suchresultat verwendet. OEREB-Webservice Base-Url
+        // kennt man so nicht.
+        else { 
             HttpURLConnection connection = null;
             int responseCode = 0;
             for (String baseUrl : Consts.OEREB_SERVICE_BASE_URL) {
