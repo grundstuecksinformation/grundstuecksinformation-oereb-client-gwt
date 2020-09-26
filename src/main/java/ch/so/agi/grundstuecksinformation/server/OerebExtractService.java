@@ -19,6 +19,8 @@ import ch.ehi.oereb.schemas.oereb._1_0.extractdata.MultilingualTextType;
 import ch.ehi.oereb.schemas.oereb._1_0.extractdata.MultilingualUriType;
 import ch.ehi.oereb.schemas.oereb._1_0.extractdata.RealEstateDPRType;
 import ch.ehi.oereb.schemas.oereb._1_0.extractdata.RestrictionOnLandownershipType;
+import ch.so.agi.grundstuecksinformation.shared.EgridResponse;
+import ch.so.agi.grundstuecksinformation.shared.OerebWebService;
 import ch.so.agi.grundstuecksinformation.shared.models.AbstractTheme;
 import ch.so.agi.grundstuecksinformation.shared.models.ConcernedTheme;
 import ch.so.agi.grundstuecksinformation.shared.models.Document;
@@ -67,6 +69,9 @@ public class OerebExtractService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    AppConfig config;
+
+    @Autowired
     Jaxb2Marshaller marshaller;
 
     private static final LanguageCodeType DE = LanguageCodeType.DE;
@@ -89,54 +94,35 @@ public class OerebExtractService {
     })
     .collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
-    public RealEstateDPR getExtract(Egrid egrid, RealEstateDPR realEstateDPR) throws IOException {     
-        // FIXME: Kann man vereinfachen.
-        File xmlFile;
-        // Request by map click. Egrid wird vorgängig beim kantonalen OEREB-Webservice
-        // angefragt. Aus diesem Grund kennt man die OEREB-Webservice Base-Url.
-        if (egrid.getOerebServiceBaseUrl() != null) { 
-            xmlFile = Files.createTempFile("oereb_extract_", ".xml").toFile();
-            URL url = new URL(egrid.getOerebServiceBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
-            logger.debug("extract url: " + url.toString());
+    public RealEstateDPR getExtract(Egrid egrid, RealEstateDPR realEstateDPR) throws IOException { 
+        List<OerebWebService> oerebWebServices = config.getOerebWebServices();  
 
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        HttpURLConnection connection = null;
+        int responseCode = 204;
+        for (OerebWebService ws : oerebWebServices) {
+            URL url = new URL(ws.getBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
+            logger.debug("Url: " + url.toString());
+
+            connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/xml");
+            responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                logger.debug("Extract request successful: " + url.toString());
+                break;
+            }
+        }
 
-            if (connection.getResponseCode() != 200) {
-                throw new IOException(connection.getResponseMessage());
-            }
-            
-            InputStream initialStream = connection.getInputStream();
-            java.nio.file.Files.copy(initialStream, xmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            initialStream.close();
-            logger.info("File downloaded: " + xmlFile.getAbsolutePath());  
+        if (responseCode == 204) {
+            throw new IllegalStateException("No extract found for egrid: " + egrid.getEgrid());
         }
-        // Request by search. Egrid wird vom Suchresultat verwendet. OEREB-Webservice Base-Url
-        // kennt man so nicht.
-        else { 
-            HttpURLConnection connection = null;
-            int responseCode = 0;
-            for (String baseUrl : Consts.OEREB_SERVICE_BASE_URL) {
-                URL url = new URL(baseUrl + "extract/reduced/xml/geometry/" + egrid.getEgrid());
-                logger.info(url.toString());
-                
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Accept", "application/xml");
-                responseCode = connection.getResponseCode();
-                if (responseCode == 200) {
-                    logger.info("Extract found: " + url.toString());
-                    break;
-                } 
-            }
-            xmlFile = Files.createTempFile("oereb_extract_", ".xml").toFile();            
-            InputStream initialStream = connection.getInputStream();
-            java.nio.file.Files.copy(initialStream, xmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            initialStream.close();
-            logger.info("File downloaded: " + xmlFile.getAbsolutePath());  
-        }
-        
+
+        File xmlFile = Files.createTempFile("oereb_extract_", ".xml").toFile();
+        InputStream initialStream = connection.getInputStream();
+        java.nio.file.Files.copy(initialStream, xmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        initialStream.close();
+        logger.debug("File downloaded: " + xmlFile.getAbsolutePath());
+
         StreamSource xmlSource = new StreamSource(xmlFile);
         GetExtractByIdResponse obj = (GetExtractByIdResponse) marshaller.unmarshal(xmlSource);
         ExtractType xmlExtract = obj.getValue().getExtract().getValue();

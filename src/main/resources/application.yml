@@ -1,0 +1,37 @@
+# ========================
+# TOMCAT
+# ========================
+server:
+  tomcat:
+    additional-tld-skip-patterns: '*.jar'
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+# ========================
+# SPRING
+# ========================
+logging:
+  level:
+    org.springframework: INFO 
+    ch.so.agi.grundstuecksinformation.server.EgridServiceImpl: DEBUG 
+    ch.so.agi.grundstuecksinformation.server.ExtractServiceImpl: DEBUG 
+    ch.so.agi.grundstuecksinformation.server.OerebExtractService: DEBUG 
+
+# spring:
+#     profiles:
+#         active: test 
+
+# ========================
+# Application
+# ========================
+app:
+    myVar: ${VAR:defaultValue}
+    searchServiceUrl: ${SEARCH_SERVICE_URL:https://api3.geo.admin.ch/rest/services/api/SearchServer?sr=2056&limit=15&type=locations&origins=address,parcel&searchText=} 
+    oerebWebServices:
+        - id: ch.so
+          baseUrl: https://geo.so.ch/api/oereb/
+        - id: ch.sh
+          baseUrl: https://oereb.geo.sh.ch/oereb/
+

@@ -9,5 +9,5 @@ import ch.so.agi.grundstuecksinformation.shared.models.Egrid;
 
 @RemoteServiceRelativePath("extract")
 public interface ExtractService extends RemoteService {
-    ExtractResponse extractServer(Egrid egrid) throws IllegalArgumentException, IOException;
+    ExtractResponse extractServer(Egrid egrid) throws Exception;
 }

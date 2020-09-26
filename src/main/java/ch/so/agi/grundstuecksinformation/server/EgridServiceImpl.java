@@ -9,9 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.xml.bind.JAXBElement;
@@ -27,6 +24,7 @@ import ch.ehi.oereb.schemas.oereb._1_0.extract.GetEGRIDResponse;
 import ch.ehi.oereb.schemas.oereb._1_0.extract.GetEGRIDResponseType;
 import ch.so.agi.grundstuecksinformation.shared.EgridResponse;
 import ch.so.agi.grundstuecksinformation.shared.EgridService;
+import ch.so.agi.grundstuecksinformation.shared.OerebWebService;
 import ch.so.agi.grundstuecksinformation.shared.models.Egrid;
 
 import org.slf4j.Logger;
@@ -35,6 +33,9 @@ import org.slf4j.Logger;
 public class EgridServiceImpl extends RemoteServiceServlet implements EgridService {
     Logger logger = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
+    @Autowired
+    AppConfig config;
+    
     @Autowired
     Jaxb2Marshaller marshaller;
             
@@ -48,13 +49,15 @@ public class EgridServiceImpl extends RemoteServiceServlet implements EgridServi
     
     @Override
     public EgridResponse egridServer(String XY) throws IllegalArgumentException, IOException {
+        List<OerebWebService> oerebWebServices = config.getOerebWebServices();  
+        
         URL egridUrl = null;
         String oerebBaseUrl = null;
         HttpURLConnection connection = null;
-        int responseCode = 0;
-        for (String baseUrl : Consts.OEREB_SERVICE_BASE_URL) {
-            URL url = new URL(baseUrl + "getegrid/xml/?XY=" + XY.replace(" ",""));
-            logger.info(url.toString());
+        int responseCode = 204;
+        for (OerebWebService ws : oerebWebServices) {
+            URL url = new URL(ws.getBaseUrl() + "getegrid/xml/?XY=" + XY.replace(" ",""));
+            logger.debug("Url: " + url.toString());
             
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -62,8 +65,8 @@ public class EgridServiceImpl extends RemoteServiceServlet implements EgridServi
             responseCode = connection.getResponseCode();
             if (responseCode == 200) {
                 egridUrl = url;
-                oerebBaseUrl = baseUrl;
-                logger.info("E-GRID found: " + egridUrl);
+                oerebBaseUrl = ws.getBaseUrl();
+                logger.debug("GetEgrid request successful: " + egridUrl);
                 break;
             } 
         }
@@ -79,7 +82,7 @@ public class EgridServiceImpl extends RemoteServiceServlet implements EgridServi
         InputStream initialStream = connection.getInputStream();
         java.nio.file.Files.copy(initialStream, xmlFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         initialStream.close();
-        logger.info("File downloaded: " + xmlFile.getAbsolutePath());
+        logger.debug("File downloaded: " + xmlFile.getAbsolutePath());
 
         StreamSource xmlSource = new StreamSource(xmlFile);
         GetEGRIDResponse obj = (GetEGRIDResponse) marshaller.unmarshal(xmlSource);
@@ -93,7 +96,7 @@ public class EgridServiceImpl extends RemoteServiceServlet implements EgridServi
             egridObj.setNumber(egridXmlList.get(i+1).getValue());
             egridObj.setIdentDN(egridXmlList.get(i+2).getValue());
             egridObj.setOerebServiceBaseUrl(oerebBaseUrl);
-            logger.info(egridObj.toString());
+            logger.debug("E-GRID: " + egridObj.getEgrid());
             egridList.add(egridObj);
         }
 

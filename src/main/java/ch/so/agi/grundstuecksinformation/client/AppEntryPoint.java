@@ -121,8 +121,7 @@ public class AppEntryPoint implements EntryPoint {
 
     // Settings
     private String MY_VAR;
-    private String SEARCH_SERVICE_URL = "https://api3.geo.admin.ch/rest/services/api/SearchServer?sr=2056&limit=15&type=locations&origins=address,parcel&searchText=";
-    private String identifyRequestTemplate = "https://api3.geo.admin.ch/rest/services/all/MapServer/identify?geometry=%s,%s&geometryFormat=geojson&geometryType=esriGeometryPoint&imageDisplay=1780,772,96&lang=de&layers=all:ch.kantone.cadastralwebmap-farbe&limit=10&mapExtent=%s,%s,%s,%s&returnGeometry=true&sr=2056&tolerance=10";
+    private String SEARCH_SERVICE_URL;
 
     // CSS
     private String SUB_HEADER_FONT_SIZE = "16px";
@@ -174,6 +173,7 @@ public class AppEntryPoint implements EntryPoint {
             @Override
             public void onSuccess(SettingsResponse result) {
                 MY_VAR = (String) result.getSettings().get("MY_VAR");
+                SEARCH_SERVICE_URL = (String) result.getSettings().get("SEARCH_SERVICE_URL");
                 init();
             }
         });
@@ -424,7 +424,6 @@ public class AppEntryPoint implements EntryPoint {
                         map.removeOverlay(realEstatePopup);
                     });
                     
-                    // TODO: Hackish, but it works.
                     // Wenn ich ohne ol.Overlay arbeite, dann ist das Popup nicht an die Karte
                     // geheftet (was mir noch egal wäre) aber ich schaffe das drag n droppen 
                     // nicht, was ich in diesem Fall notwendig fände.
@@ -467,6 +466,7 @@ public class AppEntryPoint implements EntryPoint {
             @Override
             public void onSuccess(ExtractResponse result) {
                 loader.stop();
+                                
                 String newUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost() + Window.Location.getPath() + "?egrid=" + egrid.getEgrid();
                 updateURLWithoutReloading(newUrl);
                 
@@ -474,11 +474,6 @@ public class AppEntryPoint implements EntryPoint {
                 
                 RealEstateDPR realEstateDPR = result.getRealEstateDPR();
                 String number = realEstateDPR.getNumber();
-                String municipality = realEstateDPR.getMunicipality();
-                String subunitOfLandRegister = realEstateDPR.getSubunitOfLandRegister();
-                String canton = realEstateDPR.getCanton();
-                String egrid = realEstateDPR.getEgrid();
-                int area = realEstateDPR.getLandRegistryArea();
                 String realEstateType = realEstateDPR.getRealEstateType();
                 
                 ol.layer.Vector vlayer = createRealEstateVectorLayer(realEstateDPR.getLimit());
@@ -1239,13 +1234,12 @@ public class AppEntryPoint implements EntryPoint {
         return vectorLayer;
     }
 
-    // Remove all WMS (= oereb concerned themes) layers and the
-    // vector layer for highlighting the real estate.
+    // Entfernt all WMS layer die aus dem Extract hinzugefügt
+    // worden sind und den Grundstücks-Bandierungslayer.
     private void removeOerebWmsLayers() {
-        // Remove WMS (concerned themes) layers.
-        // I cannot iterate over map.getLayers() and
-        // use map.removeLayers(). Seems to get some
-        // confusion with the indices or whatever...
+        // Man kann nicht über map.getLayers() iterieren
+        // und gleichzeitig Objekt entfernen. Aus diesem
+        // Grund gibt es die oerebWmsLayers-Liste.
         for (String layerId : oerebWmsLayers) {
             Image rlayer = (Image) getMapLayerById(layerId);
             map.removeLayer(rlayer);
@@ -1272,8 +1266,8 @@ public class AppEntryPoint implements EntryPoint {
                     return item;
                 }
             } catch (Exception e) {
-                GWT.log(e.getMessage());
-                GWT.log("should not reach here");
+                console.log(e.getMessage());
+                console.log("should not reach here");
             }
         }
         return null;

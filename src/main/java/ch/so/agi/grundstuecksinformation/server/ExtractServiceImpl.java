@@ -1,7 +1,5 @@
 package ch.so.agi.grundstuecksinformation.server;
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +28,14 @@ public class ExtractServiceImpl extends RemoteServiceServlet implements ExtractS
     }
 
     @Override
-    public ExtractResponse extractServer(Egrid egrid) throws IllegalArgumentException, IOException {
-        logger.info("Oereb extract request for: " + egrid.getEgrid());
-        
-        RealEstateDPR realEstateDPR = new RealEstateDPR();
-        oerebExtractService.getExtract(egrid, realEstateDPR);
+    public ExtractResponse extractServer(Egrid egrid) throws Exception {
+        logger.debug("Extract request for: " + egrid.getEgrid());
         
         ExtractResponse extractResponse = new ExtractResponse();
+        RealEstateDPR realEstateDPR = new RealEstateDPR();
+        oerebExtractService.getExtract(egrid, realEstateDPR);
         extractResponse.setRealEstateDPR(realEstateDPR);
+        
         return extractResponse;
     }  
 }
