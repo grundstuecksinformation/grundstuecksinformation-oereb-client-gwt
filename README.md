@@ -12,7 +12,7 @@
 - console.log() bereinigen
 - Fehlende GUI-Übersetzungen
 - Multilingual im Backend?
-- Ellipsis in Legende
+- ~~Ellipsis in Legende~~
 
 ## Development
 
