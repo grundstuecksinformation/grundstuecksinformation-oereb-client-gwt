@@ -774,11 +774,12 @@ public class AppEntryPoint implements EntryPoint {
                         String legendAtWeb = theme.getLegendAtWeb();
 
                         if (legendAtWeb.toLowerCase().endsWith(".xml") || legendAtWeb.toLowerCase().endsWith(".html") || legendAtWeb.toLowerCase().endsWith(".pdf")) {
-                            HTMLElement legendLink = a().attr("class", "resultLink")
+                            HTMLElement legendLink = a()
+                                    .attr("class", "resultLink")
                                     .attr("href", legendAtWeb)
                                     .attr("target", "_blank")
                                     .add(TextNode.of(legendAtWeb)).element();
-                            contentDiv.appendChild(div().add(legendLink).element());
+                            contentDiv.appendChild(div().style("color: #2196F3;overflow: hidden; text-overflow: ellipsis;").add(legendLink).element());
                         } else {
                             HTMLElement legendLink = a()
                                     .attr("class", "resultLink")

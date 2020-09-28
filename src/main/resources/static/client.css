@@ -264,6 +264,8 @@ p.slide-container {
 
 
 .resultLink {
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: #2196F3; 
 }
 

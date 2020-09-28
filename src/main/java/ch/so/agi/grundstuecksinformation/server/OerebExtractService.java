@@ -100,25 +100,48 @@ public class OerebExtractService {
         HttpURLConnection connection = null;
         int responseCode = 204;
         
-        URL url = new URL(egrid.getOerebServiceBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
-        logger.debug("Url: " + url.toString());
 
-        try {
-            connection = (HttpURLConnection) url.openConnection();
-            // TODO: how to handle read timeouts?
-            // Read timeout darf ja nicht zu klein sein, weil das
-            // Herstellen des PDF eine Weile dauern kann.
-            connection.setConnectTimeout(4000);
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Accept", "application/xml");
-            responseCode = connection.getResponseCode();
-            if (responseCode == 200) {
-                logger.debug("Extract request successful: " + url.toString());
-            }   
-        } catch (Exception e) {
-             logger.error(e.getMessage());
+        // Falls Request via URL
+        if (egrid.getOerebServiceBaseUrl() == null) {
+            for (OerebWebService ws : oerebWebServices) {
+                URL url = new URL(ws.getBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
+                logger.debug("Url: " + url.toString());
+                
+                try {
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setConnectTimeout(4000);
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("Accept", "application/xml");
+                    responseCode = connection.getResponseCode();
+                    if (responseCode == 200) {
+                        logger.debug("Extract request successful: " + url.toString());
+                        break;
+                    }                 
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        } else {
+            URL url = new URL(egrid.getOerebServiceBaseUrl() + "extract/reduced/xml/geometry/" + egrid.getEgrid());
+            logger.debug("Url: " + url.toString());
+
+            try {
+                connection = (HttpURLConnection) url.openConnection();
+                // TODO: how to handle read timeouts?
+                // Read timeout darf ja nicht zu klein sein, weil das
+                // Herstellen des PDF eine Weile dauern kann.
+                connection.setConnectTimeout(4000);
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Accept", "application/xml");
+                responseCode = connection.getResponseCode();
+                if (responseCode == 200) {
+                    logger.debug("Extract request successful: " + url.toString());
+                }   
+            } catch (Exception e) {
+                 logger.error(e.getMessage());
+            }    
         }
-        
+                
         if (responseCode == 204) {
             throw new IllegalStateException("No extract found for egrid: " + egrid.getEgrid());
         }
