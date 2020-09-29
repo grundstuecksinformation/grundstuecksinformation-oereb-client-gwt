@@ -211,6 +211,15 @@ public class OerebExtractService {
          * Subtheme:             73B_73C_ARE_DNPGrundnutzung               
          */
         
+        /* 
+         * TODO: Stimmt so noch nicht ganz. AG befüllt zwar Subthemen, die sollen aber keinen 
+         * Zweck erfüllen. Siehe Nutzungsplanung. Da darf es trotzdem  nur Nutzungsplanung geben, 
+         * sonst stimmt der WMS nicht.
+         * Man kann noch testen, ob das Subthema oder der Code des Themas bei einer Eigentumsbeschränkung
+         * in den ConcernedThemes vorkommt. Falls beides nicht vorkommt, darf nicht gruppiert werden.
+         * Das kann aber endlos werden, man das eigentlich pro Thema machen muss...
+         */
+        
         /*
          * Weil Kantone Subthemen völlig anders behandeln und verwenden, muss dem auch beim Verarbeiten
          * und Darstellen im Client Rechnung getragen werden.
