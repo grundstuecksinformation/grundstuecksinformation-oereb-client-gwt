@@ -218,6 +218,8 @@ public class OerebExtractService {
          * Man kann noch testen, ob das Subthema oder der Code des Themas bei einer Eigentumsbeschränkung
          * in den ConcernedThemes vorkommt. Falls beides nicht vorkommt, darf nicht gruppiert werden.
          * Das kann aber endlos werden, man das eigentlich pro Thema machen muss...
+         * 
+         * Oder: In Collectors.groupingBy() die Prüfung vornehmen, WIE und OB gruppiert werden soll.
          */
         
         /*
