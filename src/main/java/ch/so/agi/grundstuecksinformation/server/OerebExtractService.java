@@ -19,7 +19,6 @@ import ch.ehi.oereb.schemas.oereb._1_0.extractdata.MultilingualTextType;
 import ch.ehi.oereb.schemas.oereb._1_0.extractdata.MultilingualUriType;
 import ch.ehi.oereb.schemas.oereb._1_0.extractdata.RealEstateDPRType;
 import ch.ehi.oereb.schemas.oereb._1_0.extractdata.RestrictionOnLandownershipType;
-import ch.so.agi.grundstuecksinformation.shared.EgridResponse;
 import ch.so.agi.grundstuecksinformation.shared.OerebWebService;
 import ch.so.agi.grundstuecksinformation.shared.models.AbstractTheme;
 import ch.so.agi.grundstuecksinformation.shared.models.ConcernedTheme;
@@ -45,6 +44,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +100,6 @@ public class OerebExtractService {
         HttpURLConnection connection = null;
         int responseCode = 204;
         
-
         // Falls Request via URL
         if (egrid.getOerebServiceBaseUrl() == null) {
             for (OerebWebService ws : oerebWebServices) {
@@ -114,6 +113,7 @@ public class OerebExtractService {
                     connection.setRequestProperty("Accept", "application/xml");
                     responseCode = connection.getResponseCode();
                     if (responseCode == 200) {
+                        egrid.setOerebServiceBaseUrl(ws.getBaseUrl());
                         logger.debug("Extract request successful: " + url.toString());
                         break;
                     }                 
@@ -276,7 +276,7 @@ public class OerebExtractService {
                     .collect(Collectors.toMap(r -> {
                         return new TypeTuple(r.getTypeCode(), r.getTypeCodeList());
                     }, Function.identity()));
-            logger.debug("*********: " + restrictionsMap.toString());
+            logger.debug("restrictionsMap: " + restrictionsMap.toString());
             
             // Die Summe der sogenannten Shares (Fläche(prozent)/Länge/Anzahl Punkte) pro
             // Typecode/TypcodeList-Tupel.
@@ -493,6 +493,8 @@ public class OerebExtractService {
             int layerIndex = xmlRestrictions.get(0).getMap().getLayerIndex();
             String wmsUrl = xmlRestrictions.get(0).getMap().getReferenceWMS();
             
+            logger.info("WMS URL XML: " + wmsUrl);
+            
             UriComponents uriComponents = UriComponentsBuilder.fromUriString(URLDecoder.decode(wmsUrl, StandardCharsets.UTF_8.toString())).build();            
             String schema = uriComponents.getScheme();
             String host = uriComponents.getHost();
@@ -500,6 +502,7 @@ public class OerebExtractService {
             
             String layers = null;
             String imageFormat = null;
+            HashMap<String,String> params = new HashMap<String,String>();
             Iterator<Map.Entry<String, List<String>>> iterator = uriComponents.getQueryParams().entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, List<String>> e = iterator.next();
@@ -509,6 +512,11 @@ public class OerebExtractService {
                 }
                 if (e.getKey().equalsIgnoreCase("format")) {
                     imageFormat = e.getValue().get(0);
+                }
+                
+                // MapServer
+                if (e.getKey().equalsIgnoreCase("map")) {
+                    params.put("map", e.getValue().get(0));
                 }
             }
             
@@ -523,6 +531,7 @@ public class OerebExtractService {
             ReferenceWMS referenceWMS = new ReferenceWMS();
             referenceWMS.setBaseUrl(baseUrl);
             referenceWMS.setLayers(layers);
+            referenceWMS.setParams(params);
             referenceWMS.setImageFormat(imageFormat);
             referenceWMS.setLayerOpacity(layerOpacity);
             referenceWMS.setLayerIndex(layerIndex);

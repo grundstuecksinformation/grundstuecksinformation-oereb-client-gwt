@@ -1,11 +1,16 @@
 package ch.so.agi.grundstuecksinformation.shared.models;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ReferenceWMS implements IsSerializable {
     private String baseUrl;
     
     private String layers;
+    
+    private Map<String,String> params;
     
     private String imageFormat;
     
@@ -29,6 +34,14 @@ public class ReferenceWMS implements IsSerializable {
 
     public void setLayers(String layers) {
         this.layers = layers;
+    }
+
+    public Map<String,String> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String,String> params) {
+        this.params = params;
     }
 
     public String getImageFormat() {

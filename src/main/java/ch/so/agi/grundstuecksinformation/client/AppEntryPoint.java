@@ -1156,6 +1156,10 @@ public class AppEntryPoint implements EntryPoint {
     private Image createOerebWmsLayer(ReferenceWMS referenceWms) {
         ImageWmsParams imageWMSParams = OLFactory.createOptions();
         imageWMSParams.setLayers(referenceWms.getLayers());
+        // z.B. MapServer mit map-Parameter (Kt. BE).
+        for (java.util.Map.Entry<String, String> entry : referenceWms.getParams().entrySet()) {
+            imageWMSParams.set(entry.getKey(), entry.getValue());
+        }
 
         ImageWmsOptions imageWMSOptions = OLFactory.createOptions();
 

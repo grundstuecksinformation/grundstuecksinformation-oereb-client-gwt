@@ -42,3 +42,11 @@ app:
           baseUrl: https://api.geo.ag.ch/v1/oereb/
         - id: ch.zh
           baseUrl: https://maps.zh.ch/oereb/
+        - id: ch.be
+          baseUrl: https://www.oereb.apps.be.ch/
+        #- id: ch.ow
+        #  baseUrl: https://oereb.gis-daten.ch/oereb/
+        #- id: ch.tg
+        #  baseUrl: https://map.geo.tg.ch/services/oereb/
+        
+        
