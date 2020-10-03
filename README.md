@@ -30,3 +30,9 @@ Or simple devmode (which worked better for java.xml.bind on client side):
 ```
 mvn gwt:generate-module gwt:devmode 
 ```
+
+## Requests
+
+- https://map.geo.tg.ch/services/oereb/extract/reduced/xml/geometry/CH998077412934
+- https://oereb.gis-daten.ch/oereb/extract/reduced/xml/geometry/CH413645047763
+- https://prozessor-oereb.ur.ch/oereb/extract/reduced/xml/geometry/CH474678750731
