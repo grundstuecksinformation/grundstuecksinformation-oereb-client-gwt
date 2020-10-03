@@ -193,7 +193,7 @@ public class OerebExtractService {
         // Diese ConcernedThemes werden in einer Liste gespeichert. Dies entspricht
         // dem späteren Handling im GUI.
         logger.debug("===========Concerned themes===========");
-        
+                
         /*
          * Solothurn:
          * Theme.Code:           LandUsePlans                               LandUsePlans
@@ -208,30 +208,30 @@ public class OerebExtractService {
          * Aargau:
          * Theme.Code:           LandUsePlans                              
          * Theme.Text.Text:      Nutzungsplanung (kantonal/kommunal)       
-         * Subtheme:             73B_73C_ARE_DNPGrundnutzung               
+         * Subtheme:             73B_73C_ARE_DNPGrundnutzung 
+         * !!ACHTUNG!! Subthemen haben im Kt. AG m.E. keinen Zweck und müssten eigentlich
+         * ignoriert werden. Insbesondere weil im WMS-Request immer das gesamte Thema steckt.
+         * -> Einen Weg finden wie man hier nicht nach Subthema gruppiert.                           
          */
-        
-        /* 
-         * TODO: Stimmt so noch nicht ganz. AG befüllt zwar Subthemen, die sollen aber keinen 
-         * Zweck erfüllen. Siehe Nutzungsplanung. Da darf es trotzdem  nur Nutzungsplanung geben, 
-         * sonst stimmt der WMS nicht.
-         * Man kann noch testen, ob das Subthema oder der Code des Themas bei einer Eigentumsbeschränkung
-         * in den ConcernedThemes vorkommt. Falls beides nicht vorkommt, darf nicht gruppiert werden.
-         * Das kann aber endlos werden, man das eigentlich pro Thema machen muss...
-         * 
-         * Oder: In Collectors.groupingBy() die Prüfung vornehmen, WIE und OB gruppiert werden soll.
-         */
-        
+               
         /*
          * Weil Kantone Subthemen völlig anders behandeln und verwenden, muss dem auch beim Verarbeiten
          * und Darstellen im Client Rechnung getragen werden.
          * Auf Serverseite muss die Kombination Theme.Text.Text + Subtheme gruppiert werden.
          * Im Client für das Beschriften der Handorgeln wird geprüft, ob - falls vorhanden - das Subthema
          * sprechend ist (Kanton Solothurn) oder ob es sich um den technischen Namen handelt (Kanton GL).
+         * Achtung: Siehe Kt. AG, es ist noch komplizierter.
          */
         Map<ThemeTuple, List<RestrictionOnLandownershipType>> groupedXmlRestrictions = xmlExtract.getRealEstate().getRestrictionOnLandownership()
                 .stream()
-                .collect(Collectors.groupingBy(r -> new ThemeTuple(r.getTheme().getText().getText(), r.getSubTheme())));
+                .collect(Collectors.groupingBy(r -> {
+                    String subTheme = r.getSubTheme();
+                    
+                    if (xmlExtract.getRealEstate().getCanton().value().equalsIgnoreCase("AG")) {
+                        subTheme = null;
+                    }
+                    return new ThemeTuple(r.getTheme().getText().getText(), subTheme);
+                }));
         logger.debug("groupedXmlRestrictions (tuple): " + groupedXmlRestrictions.toString());
 
         ArrayList<ConcernedTheme> concernedThemesList = new ArrayList<ConcernedTheme>();
@@ -544,7 +544,8 @@ public class OerebExtractService {
             concernedTheme.setLegendAtWeb(legendAtWeb);
             concernedTheme.setCode(xmlRestrictions.get(0).getTheme().getCode());
             concernedTheme.setName(xmlRestrictions.get(0).getTheme().getText().getText());
-            concernedTheme.setSubtheme(xmlRestrictions.get(0).getSubTheme());
+            // Man muss das Subtheme verwenden, welches wir eventuell mit null überschrieben haben, verwenden.
+            concernedTheme.setSubtheme(entry.getKey().getSubtheme());
             concernedTheme.setResponsibleOffice(officeList);
 
             concernedThemesList.add(concernedTheme);
