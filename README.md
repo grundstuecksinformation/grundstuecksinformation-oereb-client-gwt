@@ -36,3 +36,23 @@ mvn gwt:generate-module gwt:devmode
 - https://map.geo.tg.ch/services/oereb/extract/reduced/xml/geometry/CH998077412934
 - https://oereb.gis-daten.ch/oereb/extract/reduced/xml/geometry/CH413645047763
 - https://prozessor-oereb.ur.ch/oereb/extract/reduced/xml/geometry/CH474678750731
+
+## Probleme
+
+### TG
+- Geschützter WMS? CORS-Problematik?
+- Dito bei den Symbolen.
+- LayerOpacity=0 -> komplett transparent
+- Dokumente fehlerhaft: keine Links
+
+### AG
+- Subthemen ohne Zweck resp. falsch, weil WMS alle Layer des Themas enthält.
+
+### OW
+- Es wird immer das <Image> zurückgeliefert, nie <ReferenceWMS>
+
+### UR
+- Siehe OW
+
+### ZH
+- WMS enthält Highlighting und Hintergrundkarte
