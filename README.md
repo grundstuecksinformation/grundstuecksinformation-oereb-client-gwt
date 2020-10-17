@@ -1,6 +1,7 @@
 # oereb-client-gwt
 
 ## TODO
+- Fix serialization error
 - ~~Hintergrundkarte Schweiz... ?!~~
 - ~~cadastre-web-service entfernen (xsd, ...)~~
 - ~~Unterschiedliches Icon für Suchresultate (siehe wgc-gwt)~~
