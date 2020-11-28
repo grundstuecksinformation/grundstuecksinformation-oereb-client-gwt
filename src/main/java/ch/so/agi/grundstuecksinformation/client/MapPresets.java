@@ -283,7 +283,10 @@ public class MapPresets {
         Projection projection = new Projection(projectionOptions);
 
         WmtsOptions wmtsOptions = OLFactory.createOptions();
-        wmtsOptions.setUrl("https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
+        //wmtsOptions.setUrl("https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
+        //wmtsOptions.setUrl("http://localhost:8281/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
+        //wmtsOptions.setUrl("http://67.207.73.98/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
+        wmtsOptions.setUrl("http://wmts.sogeo.services/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
         wmtsOptions.setLayer("ch.so.agi.hintergrundkarte_sw");
         wmtsOptions.setRequestEncoding("REST");
         wmtsOptions.setFormat("image/png");

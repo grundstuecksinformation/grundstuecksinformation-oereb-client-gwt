@@ -307,7 +307,8 @@ public class AppEntryPoint implements EntryPoint {
         // It seems that initializing the map and/or adding the click listener
         // must be done after adding the value changed handler of the search.
         // Selecting a search result was also triggering a map single click event.
-        map = MapPresets.getFederalMap(mapDiv.id);
+        //map = MapPresets.getFederalMap(mapDiv.id);
+        map = MapPresets.getBlackAndWhiteMap(mapDiv.id);
         map.addSingleClickListener(new MapSingleClickListener());
 
         // If there is an egrid query parameter in the url,
