@@ -32,6 +32,7 @@ import ol.source.WmtsOptions;
 import ol.tilegrid.TileGrid;
 import ol.tilegrid.WmtsTileGrid;
 import ol.tilegrid.WmtsTileGridOptions;
+import ol.Size;
 import proj4.Proj4;
 
 public class MapPresets {
@@ -284,9 +285,9 @@ public class MapPresets {
 
         WmtsOptions wmtsOptions = OLFactory.createOptions();
         //wmtsOptions.setUrl("https://geo.so.ch/api/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
-        //wmtsOptions.setUrl("http://localhost:8281/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
+        wmtsOptions.setUrl("http://localhost:8281/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
         //wmtsOptions.setUrl("http://67.207.73.98/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
-        wmtsOptions.setUrl("http://wmts.sogeo.services/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
+        //wmtsOptions.setUrl("http://wmts{1-4}.sogeo.services/mapcache/wmts/1.0.0/{Layer}/default/2056/{TileMatrix}/{TileRow}/{TileCol}");
         wmtsOptions.setLayer("ch.so.agi.hintergrundkarte_sw");
         wmtsOptions.setRequestEncoding("REST");
         wmtsOptions.setFormat("image/png");
@@ -294,7 +295,8 @@ public class MapPresets {
         wmtsOptions.setStyle("default");
         wmtsOptions.setProjection(projection);
         wmtsOptions.setWrapX(true);
-        wmtsOptions.setTileGrid(createWmtsTileGrid(projection, resolutionsSogis));
+        //wmtsOptions.setTileGrid(createWmtsTileGrid(projection, resolutionsSogis));
+        wmtsOptions.setTileGrid(createWmtsTileGrid(projection, resolutionsSogis, new Size(512,512)));
 
         Wmts wmtsSource = new Wmts(wmtsOptions);
 
@@ -334,6 +336,10 @@ public class MapPresets {
     }
     
     private static TileGrid createWmtsTileGrid(Projection projection, double[] resolutions) {
+        return createWmtsTileGrid(projection, resolutions, new Size(256,256));
+    }
+    
+    private static TileGrid createWmtsTileGrid(Projection projection, double[] resolutions, Size tileSize) {
         WmtsTileGridOptions wmtsTileGridOptions = OLFactory.createOptions();
         
         String[] matrixIds = new String[resolutions.length];
@@ -346,6 +352,7 @@ public class MapPresets {
         wmtsTileGridOptions.setOrigin(tileGridOrigin);
         wmtsTileGridOptions.setResolutions(resolutions);
         wmtsTileGridOptions.setMatrixIds(matrixIds);
+        wmtsTileGridOptions.setTileSize(tileSize);
 
         return new WmtsTileGrid(wmtsTileGridOptions);
     }
